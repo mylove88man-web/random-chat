@@ -7,9 +7,10 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'random-chat-secret-2024'
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-waiting_queue = []   # 대기 중인 sid 목록
-pairs = {}           # sid → room_id
-rooms = {}           # room_id → [sid1, sid2]
+waiting_queue = []
+pairs = {}
+rooms = {}
+nicknames = {}
 
 
 def get_partner(sid):
@@ -23,7 +24,6 @@ def get_partner(sid):
 
 
 def leave_room_cleanup(sid):
-    """방에서 나가고 상대방에게 알림"""
     partner = get_partner(sid)
     room_id = pairs.pop(sid, None)
     if room_id and room_id in rooms:
@@ -49,20 +49,21 @@ def on_disconnect():
     if sid in waiting_queue:
         waiting_queue.remove(sid)
     leave_room_cleanup(sid)
+    nicknames.pop(sid, None)
 
 
 @socketio.on('find_partner')
-def on_find_partner():
+def on_find_partner(data=None):
     sid = request.sid
+    nickname = (data or {}).get('nickname', '익명') or '익명'
+    nickname = nickname[:10]
+    nicknames[sid] = nickname
 
-    # 기존 방에서 나가기
     leave_room_cleanup(sid)
 
-    # 대기열 중복 제거
     if sid in waiting_queue:
         waiting_queue.remove(sid)
 
-    # 매칭 시도
     if waiting_queue:
         partner_sid = waiting_queue.pop(0)
         room_id = str(uuid.uuid4())[:8]
@@ -74,8 +75,8 @@ def on_find_partner():
         socketio.server.enter_room(sid, room_id, namespace='/')
         socketio.server.enter_room(partner_sid, room_id, namespace='/')
 
-        emit('matched', to=sid)
-        emit('matched', to=partner_sid)
+        emit('matched', {'partner_nickname': nicknames.get(partner_sid, '익명')}, to=sid)
+        emit('matched', {'partner_nickname': nickname}, to=partner_sid)
     else:
         waiting_queue.append(sid)
         emit('waiting')
