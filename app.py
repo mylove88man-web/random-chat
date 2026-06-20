@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_from_directory
 from flask_socketio import SocketIO, emit
 import uuid
 import os
@@ -38,6 +38,11 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/park.png')
+def park_image():
+    return send_from_directory('.', 'park.png')
+
+
 @socketio.on('connect')
 def on_connect():
     pass
@@ -72,7 +77,6 @@ def on_find_partner(data=None):
         pairs[sid] = room_id
         pairs[partner_sid] = room_id
 
-        socketio.server.enter_room(sid, room_id, namespace='/')
         socketio.server.enter_room(partner_sid, room_id, namespace='/')
 
         emit('matched', {'partner_nickname': nicknames.get(partner_sid, '익명')}, to=sid)
