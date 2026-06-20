@@ -11,11 +11,12 @@
         body {
             font-family: -apple-system, 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
             height: 100vh;
+            height: 100dvh;
             overflow: hidden;
             background: #87CEEB;
         }
 
-        .page { display: none; width: 100%; height: 100vh; }
+        .page { display: none; width: 100%; height: 100vh; height: 100dvh; }
         .page.active { display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
         /* ── 랜딩 ── */
@@ -27,9 +28,11 @@
 
         .park-scene {
             position: absolute;
-            bottom: 0; left: 0; right: 0;
+            top: 0; left: 0;
             width: 100%;
+            height: 100%;
             object-fit: cover;
+            object-position: center bottom;
         }
 
         .landing-card {
@@ -43,7 +46,6 @@
             max-width: 380px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.15);
             text-align: center;
-            margin-bottom: 180px;
         }
 
         .app-emoji { font-size: 2.8rem; margin-bottom: 6px; }
@@ -113,7 +115,6 @@
             max-width: 340px;
             text-align: center;
             box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-            margin-bottom: 180px;
         }
 
         .wait-icon {
@@ -165,13 +166,19 @@
             flex-direction: column;
             max-width: 480px;
             margin: 0 auto;
-            background: #f7f8fc;
+            background:
+                radial-gradient(ellipse at 10% 20%, rgba(134,239,172,0.35) 0%, transparent 50%),
+                radial-gradient(ellipse at 90% 10%, rgba(147,197,253,0.35) 0%, transparent 45%),
+                radial-gradient(ellipse at 50% 90%, rgba(253,224,71,0.2) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(216,180,254,0.25) 0%, transparent 45%),
+                linear-gradient(160deg, #e8f8f0 0%, #edf4ff 50%, #fdf6ff 100%);
         }
         #chatPage.active { display: flex; }
 
         .chat-header {
             padding: 14px 18px;
-            background: white;
+            background: rgba(255,255,255,0.88);
+            backdrop-filter: blur(12px);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -217,9 +224,10 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
+            background: transparent;
         }
         .messages::-webkit-scrollbar { width: 4px; }
-        .messages::-webkit-scrollbar-thumb { background: #ddd; border-radius: 2px; }
+        .messages::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 2px; }
 
         .msg-row { display: flex; align-items: flex-end; gap: 6px; }
         .msg-row.mine  { justify-content: flex-end; }
@@ -272,7 +280,8 @@
 
         .input-bar {
             padding: 12px 14px;
-            background: white;
+            background: rgba(255,255,255,0.88);
+            backdrop-filter: blur(12px);
             display: flex;
             gap: 10px;
             align-items: center;
